@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pink Beep</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --main-pink: #ffb6c1;
+            --dark-pink: #ff69b4;
+            --light-pink: #ffeef2;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--light-pink);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Press Start 2P', monospace;
+        }
+
+        .phone-container {
+            width: 390px;
+            height: 844px;
+            background: black;
+            border-radius: 40px;
+            position: relative;
+            padding: 20px;
+            box-shadow: 
+                0 0 50px rgba(0,0,0,0.3),
+                inset -5px -5px 15px rgba(255,255,255,0.1),
+                inset 5px 5px 15px rgba(0,0,0,0.5);
+            border: 12px solid #333;
+            overflow: hidden;
+        }
+
+        .screen {
+            width: 100%;
+            height: 100%;
+            background: black;
+            border-radius: 25px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 화면 데코레이션 */
+        .screen::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 30% 20%, var(--main-pink) 0%, transparent 50%),
+                radial-gradient(circle at 70% 80%, var(--main-pink) 0%, transparent 50%);
+            opacity: 0.1;
+            pointer-events: none;
+        }
+
+        .display-content {
+            text-align: center;
+            padding: 30px;
+            background: rgba(0,0,0,0.8);
+            border-radius: 20px;
+            border: 3px solid var(--main-pink);
+            box-shadow: 0 5px 15px rgba(255,105,180,0.2);
+        }
+
+        #message-count-value {
+            font-size: 3em;
+            margin: 20px 0;
+            color: var(--dark-pink);
+            text-shadow: 2px 2px 0 var(--main-pink);
+        }
+
+        .view-btn {
+            background: var(--dark-pink);
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 25px;
+            font-size: 0.9em;
+            cursor: pointer;
+            font-family: 'Press Start 2P', monospace;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(255,105,180,0.3);
+        }
+
+        .view-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(255,105,180,0.4);
+        }
+
+        .title {
+            color: var(--main-pink);
+            font-size: 1.2em;
+            margin-bottom: 20px;
+        }
+
+        /* 데코레이션 요소 */
+        .deco {
+            position: absolute;
+            font-size: 2em;
+            opacity: 0.15;
+            pointer-events: none;
+        }
+
+        .deco-1 { top: 10%; left: 10%; }
+        .deco-2 { top: 20%; right: 15%; }
+        .deco-3 { bottom: 15%; left: 20%; }
+        .deco-4 { bottom: 25%; right: 10%; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="phone-container">
+        <div class="screen">
+            <div class="deco deco-1">💌</div>
+            <div class="deco deco-2">💕</div>
+            <div class="deco deco-3">✨</div>
+            <div class="deco deco-4">🌸</div>
+            
+            <div class="display-content">
+                <div class="title">NEW MESSAGES</div>
+                <div id="message-count-value">0</div>
+                <button class="view-btn" onclick="location.href='messages.html'">
+                    메시지 보러가기 💌
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function loadMessageCount() {
+            const savedMessages = localStorage.getItem('pinkBeepMessages');
+            const count = savedMessages ? JSON.parse(savedMessages).length : 0;
+            document.getElementById('message-count-value').textContent = count;
+        }
+
+        // 페이지 로드 시 실행
+        window.addEventListener('load', loadMessageCount);
+
+        // 주기적으로 메시지 카운트 업데이트 (1초마다)
+        setInterval(loadMessageCount, 1000);
+
+        // 페이지가 다시 보여질 때마다 카운트 업데이트
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) {
+                loadMessageCount();
+            }
+        });
+    </script>
+</body>
+</html>

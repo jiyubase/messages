@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messages - Pink Beep</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --main-pink: #ffb6c1;
+            --dark-pink: #ff69b4;
+            --light-pink: #ffeef2;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--light-pink);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Press Start 2P', monospace;
+        }
+
+        .phone-container {
+            width: 390px;
+            height: 844px;
+            background: black;
+            border-radius: 40px;
+            position: relative;
+            padding: 20px;
+            box-shadow: 
+                0 0 50px rgba(0,0,0,0.3),
+                inset -5px -5px 15px rgba(255,255,255,0.1),
+                inset 5px 5px 15px rgba(0,0,0,0.5);
+            border: 12px solid #333;
+            overflow: hidden;
+        }
+
+        .screen {
+            width: 100%;
+            height: 100%;
+            background: black;
+            border-radius: 25px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header {
+            background: #333;
+            color: var(--main-pink);
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        }
+
+        .back-btn {
+            background: black;
+            color: var(--main-pink);
+            border: 1px solid var(--main-pink);
+            padding: 8px 15px;
+            border-radius: 15px;
+            font-size: 0.7em;
+            cursor: pointer;
+        }
+
+        .messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: black;
+        }
+
+        .message-card {
+            max-width: 80%;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            animation: slideIn 0.3s ease;
+        }
+
+        .message-card.left {
+            margin-right: auto;
+            margin-left: 10px;
+        }
+
+        .message-card.right {
+            margin-left: auto;
+            margin-right: 10px;
+            flex-direction: row-reverse;
+        }
+
+        .profile-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 45px;
+        }
+
+        .profile-circle {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            margin-bottom: 5px;
+        }
+
+        .left .profile-circle {
+            background: var(--dark-pink);
+        }
+
+        .right .profile-circle {
+            background: #9b4dca;
+        }
+
+        .profile-name {
+            font-size: 0.6em;
+            color: var(--main-pink);
+            margin-top: 4px;
+            white-space: nowrap;
+        }
+
+        .message-content {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .message-bubble {
+            padding: 12px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            color: white;
+            position: relative;
+            word-break: break-all;
+            max-width: 250px;
+        }
+
+        .left .message-bubble {
+            background: var(--dark-pink);
+            border-top-left-radius: 0;
+        }
+
+        .right .message-bubble {
+            background: #9b4dca;
+            border-top-right-radius: 0;
+        }
+
+        .message-time {
+            font-size: 0.6em;
+            color: var(--main-pink);
+            opacity: 0.8;
+            align-self: flex-end;
+            margin-top: 2px;
+        }
+
+        .right .message-time {
+            align-self: flex-start;
+        }
+
+        .cta {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--dark-pink);
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(255,105,180,0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .popup {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: #333;
+            padding: 20px;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.5);
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .popup.show {
+            transform: translateY(0);
+        }
+
+        .message-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid var(--main-pink);
+            border-radius: 20px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+            resize: none;
+            background: black;
+            color: var(--main-pink);
+        }
+
+        .message-input::placeholder {
+            color: rgba(255,182,193,0.5);
+        }
+
+        .popup-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .submit-btn {
+            background: var(--dark-pink);
+            color: white;
+        }
+
+        .cancel-btn {
+            background: #eee;
+            color: #666;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="phone-container">
+        <div class="screen">
+            <div class="header">
+                <button class="back-btn" onclick="location.href='beeper.html'">← 뒤로가기</button>
+                <span>Messages</span>
+            </div>
+
+            <div id="message-list" class="messages"></div>
+
+            <div class="cta" onclick="togglePopup()">+</div>
+
+            <div id="message-input-popup" class="popup">
+                <textarea id="new-message-input" class="message-input" placeholder="메시지를 입력하세요..."></textarea>
+                <div class="popup-buttons">
+                    <button class="cancel-btn" onclick="togglePopup()">취소</button>
+                    <button class="submit-btn" onclick="addMessage()">등록</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const emojis = ['🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼', '🐨', '🐯', '🦁', '🐮', '🐷', '🐸', '🐙', '🦄'];
+        let messages = [];
+
+        // 색상 배열 추가
+        const messageColors = [
+            '#FF69B4', // 핫 핑크
+            '#9370DB', // 미디엄 퍼플
+            '#FF1493', // 딥 핑크
+            '#8A2BE2', // 블루 바이올렛
+            '#FF82AB', // 팔레 바이올렛 레드
+            '#9932CC', // 다크 오키드
+            '#FFB6C1', // 라이트 핑크
+            '#BA55D3', // 미디엄 오키드
+            '#FF69B4', // 핫 핑크
+            '#8B008B'  // 다크 마젠타
+        ];
+
+        function getRandomEmoji() {
+            return emojis[Math.floor(Math.random() * emojis.length)];
+        }
+
+        function loadMessages() {
+            const savedMessages = localStorage.getItem('pinkBeepMessages');
+            if (savedMessages) {
+                messages = JSON.parse(savedMessages);
+            }
+            updateMessageList();
+        }
+
+        function saveMessages() {
+            localStorage.setItem('pinkBeepMessages', JSON.stringify(messages));
+        }
+
+        function updateMessageList() {
+            const messageList = document.getElementById('message-list');
+            messageList.innerHTML = '';
+            
+            [...messages].reverse().forEach((msg, index) => {
+                const messageCard = document.createElement('div');
+                const colorIndex = index % messageColors.length;
+                messageCard.className = `message-card ${index % 2 === 0 ? 'left' : 'right'}`;
+                
+                const name = index % 2 === 0 ? 'Pink' : 'Purple';
+                
+                messageCard.innerHTML = `
+                    <div class="profile-area">
+                        <div class="profile-circle" style="background: ${messageColors[colorIndex]}">
+                            ${msg.emoji}
+                        </div>
+                        <div class="profile-name">${name}</div>
+                    </div>
+                    <div class="message-content">
+                        <div class="message-bubble" style="background: ${messageColors[colorIndex]}">
+                            ${msg.text}
+                        </div>
+                        <div class="message-time">${msg.time}</div>
+                    </div>
+                `;
+                messageList.appendChild(messageCard);
+            });
+
+            messageList.scrollTop = 0;
+        }
+
+        function togglePopup() {
+            const popup = document.getElementById('message-input-popup');
+            const isShowing = popup.classList.contains('show');
+            
+            if (isShowing) {
+                popup.classList.remove('show');
+                document.getElementById('new-message-input').value = '';
+            } else {
+                popup.classList.add('show');
+            }
+        }
+
+        function addMessage() {
+            const input = document.getElementById('new-message-input');
+            const text = input.value.trim();
+            
+            if (text) {
+                const now = new Date();
+                const timeString = now.toLocaleString();
+                const newMessage = {
+                    text: text,
+                    time: timeString,
+                    emoji: getRandomEmoji()
+                };
+                
+                messages.push(newMessage);
+                saveMessages();
+                updateMessageList();
+                togglePopup();
+                input.value = '';
+            }
+        }
+
+        // 엔 키로 메시지 전송
+        document.getElementById('new-message-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                addMessage();
+            }
+        });
+
+        // 페이지 로드 시 실행
+        window.addEventListener('load', loadMessages);
+    </script>
+</body>
+</html> 
+</html> 
